@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-read --allow-env --allow-net --unstable-detect-cjs --allow-sys=osRelease main.ts"
+  },
+  "imports": {
+    "@nestjs/common": "npm:@nestjs/common@^11.0.20",
+    "@nestjs/platform-express": "npm:@nestjs/platform-express@^11.0.20",
+    "@std/assert": "jsr:@std/assert@1",
+    "@nestjs/core": "npm:@nestjs/core@^11.0.20"
+  },
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
+  }
+}

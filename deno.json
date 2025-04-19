@@ -1,0 +1,8 @@
+{
+  "workspace": [
+    "./ellytask-backend",
+    "./ellycore-cron",
+    "./ellycore-fragments-backend"
+  ],
+  "nodeModulesDir": "auto"
+}
