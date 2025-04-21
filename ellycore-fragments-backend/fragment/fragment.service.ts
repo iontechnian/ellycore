@@ -14,6 +14,8 @@ export class FragmentService {
   async create(createFragmentDto: CreateFragmentDTO): Promise<FragmentResponseDTO> {
     const { name, description, source } = createFragmentDto;
     const id = uuid();
+  
+    await this.sourceService.writeFile(id, source);
     
     await this.databaseService.run(
       'INSERT INTO fragments (id, name, description, source) VALUES ($id, $name, $description, $source)',
@@ -21,7 +23,7 @@ export class FragmentService {
         $id: id,
         $name: name,
         $description: description || null,
-        $source: source,
+        $source: id, // Store the ID instead of the source code
        }
     );
     
@@ -34,7 +36,9 @@ export class FragmentService {
       throw new NotFoundException(`Fragment with ID ${id} not found`);
     }
     
-    return mapToFragmentResponse(fragment);
+    
+    const sourceContent = await this.sourceService.readFile(fragment.source);
+    return mapToFragmentResponse(fragment, sourceContent || '');
   }
 
   async findAll(page: number = 1, limit: number = 10): Promise<FragmentListResponseDTO> {
@@ -68,51 +72,62 @@ export class FragmentService {
       throw new NotFoundException(`Fragment with ID ${id} not found`);
     }
     
-    return mapToFragmentResponse(fragment);
+    const sourceContent = await this.sourceService.readFile(fragment.source);
+    return mapToFragmentResponse(fragment, sourceContent || '');
   }
 
   async update(id: string, updateFragmentDto: UpdateFragmentDTO): Promise<FragmentResponseDTO> {
-    // Build dynamic update query based on provided fields
-    const updates: string[] = [];
-    const params: SqlParams = { id };
-    
-    if (updateFragmentDto.name !== undefined) {
-      updates.push('name = $1ame');
-      params.name = updateFragmentDto.name;
-    }
-    
-    if (updateFragmentDto.description !== undefined) {
-      updates.push('description = $1escription');
-      params.description = updateFragmentDto.description;
-    }
-    
-    if (updateFragmentDto.source !== undefined) {
-      updates.push('source = $1ource');
-      params.source = updateFragmentDto.source;
-    }
-    
-    // Add updatedAt timestamp
-    updates.push('updatedAt = CURRENT_TIMESTAMP');
-    
-    // If no fields to update, just return the current fragment
-    if (Object.keys(params).length === 1) { // Only 'id' is present
-      return this.findOne(id);
-    }
-    
-    const result = await this.databaseService.run(
-      `UPDATE fragments SET ${updates.join(', ')} WHERE id = $id`,
-      params
+    const currentFragment = await this.databaseService.get<any>(
+      'SELECT id, source FROM fragments WHERE id = $id',
+      { $id: id }
     );
     
-    if (result.changes === 0) {
+    if (!currentFragment) {
       throw new NotFoundException(`Fragment with ID ${id} not found`);
     }
     
-    // Get the updated fragment
+    // Build dynamic update query based on provided fields
+    const updates: string[] = [];
+    const params: SqlParams = { $id: id };
+    
+    if (updateFragmentDto.name !== undefined) {
+      updates.push('name = $name');
+      params.$name = updateFragmentDto.name;
+    }
+    
+    if (updateFragmentDto.description !== undefined) {
+      updates.push('description = $description');
+      params.$description = updateFragmentDto.description;
+    }
+    
+    if (updateFragmentDto.source !== undefined) {
+      await this.sourceService.writeFile(currentFragment.source, updateFragmentDto.source);
+    }
+    
+    updates.push('updatedAt = CURRENT_TIMESTAMP');
+    
+    if (updates.length > 0) {
+      await this.databaseService.run(
+        `UPDATE fragments SET ${updates.join(', ')} WHERE id = $id`,
+        params
+      );
+    }
+    
     return this.findOne(id);
   }
 
   async remove(id: string): Promise<void> {
+    const fragment = await this.databaseService.get<any>(
+      'SELECT id, source FROM fragments WHERE id = $id',
+      { $id: id }
+    );
+    
+    if (!fragment) {
+      throw new NotFoundException(`Fragment with ID ${id} not found`);
+    }
+    
+    await this.sourceService.deleteFile(fragment.source);
+    
     const result = await this.databaseService.run(
       'DELETE FROM fragments WHERE id = $id', 
       { $id: id }
@@ -124,12 +139,12 @@ export class FragmentService {
   }
 }
 
-function mapToFragmentResponse(dbFragment: any): FragmentResponseDTO {
+function mapToFragmentResponse(dbFragment: any, sourceContent?: string): FragmentResponseDTO {
   return {
     id: dbFragment.id.toString(),
     name: dbFragment.name,
     description: dbFragment.description,
-    source: dbFragment.source,
+    source: sourceContent || undefined,
     createdAt: new Date(dbFragment.createdAt),
     updatedAt: new Date(dbFragment.updatedAt)
   };

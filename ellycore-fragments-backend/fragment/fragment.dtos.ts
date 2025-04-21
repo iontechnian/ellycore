@@ -47,11 +47,11 @@ export class FragmentResponseDTO {
     })
     description?: string;
 
-    @ApiProperty({
-        description: 'The source code of the fragment',
+    @ApiPropertyOptional({
+        description: 'The source code of the fragment. Not included in list responses.',
         example: 'function myFragment() { return "Hello, World!"; }'
     })
-    source!: string;
+    source?: string;
 
     @ApiProperty({
         description: 'The timestamp when the fragment was created',

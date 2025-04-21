@@ -3,6 +3,7 @@
   "specifiers": {
     "jsr:@std/assert@1": "1.0.12",
     "jsr:@std/internal@^1.0.6": "1.0.6",
+    "jsr:@std/path@^1.0.8": "1.0.8",
     "npm:@nestjs/common@^11.0.20": "11.0.20_reflect-metadata@0.2.2_rxjs@7.8.2_class-validator@0.14.1_class-transformer@0.5.1",
     "npm:@nestjs/core@^11.0.20": "11.0.20_@nestjs+common@11.0.20__reflect-metadata@0.2.2__rxjs@7.8.2_reflect-metadata@0.2.2_rxjs@7.8.2_@nestjs+platform-express@11.0.20__@nestjs+common@11.0.20___reflect-metadata@0.2.2___rxjs@7.8.2__@nestjs+core@11.0.20_class-validator@0.14.1_class-transformer@0.5.1",
     "npm:@nestjs/platform-express@^11.0.20": "11.0.20_@nestjs+common@11.0.20__reflect-metadata@0.2.2__rxjs@7.8.2_@nestjs+core@11.0.20__@nestjs+common@11.0.20___reflect-metadata@0.2.2___rxjs@7.8.2__reflect-metadata@0.2.2__rxjs@7.8.2__@nestjs+platform-express@11.0.20_class-validator@0.14.1_class-transformer@0.5.1",
@@ -13,6 +14,7 @@
     "npm:class-validator@~0.14.1": "0.14.1",
     "npm:node-cron@^3.0.3": "3.0.3",
     "npm:reflect-metadata@~0.2.2": "0.2.2",
+    "npm:rxjs@^7.8.2": "7.8.2",
     "npm:sqlite3@^5.1.7": "5.1.7",
     "npm:uuid@^11.1.0": "11.1.0"
   },
@@ -25,6 +27,9 @@
     },
     "@std/internal@1.0.6": {
       "integrity": "9533b128f230f73bd209408bb07a4b12f8d4255ab2a4d22a1fd6d87304aca9a4"
+    },
+    "@std/path@1.0.8": {
+      "integrity": "548fa456bb6a04d3c1a1e7477986b6cffbce95102d0bb447c67c4ee70e0364be"
     }
   },
   "npm": {
@@ -1278,6 +1283,14 @@
           "npm:class-validator@~0.14.1",
           "npm:reflect-metadata@~0.2.2",
           "npm:sqlite3@^5.1.7",
+          "npm:uuid@^11.1.0"
+        ]
+      },
+      "ellycore-fragments-runtime": {
+        "dependencies": [
+          "jsr:@std/assert@1",
+          "jsr:@std/path@^1.0.8",
+          "npm:rxjs@^7.8.2",
           "npm:uuid@^11.1.0"
         ]
       },

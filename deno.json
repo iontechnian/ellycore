@@ -2,7 +2,8 @@
   "workspace": [
     "./ellytask-backend",
     "./ellycore-cron",
-    "./ellycore-fragments-backend"
+    "./ellycore-fragments-backend",
+    "./ellycore-fragments-runtime"
   ],
   "nodeModulesDir": "auto"
 }

@@ -1,6 +1,6 @@
 {
     "tasks": {
-      "dev": "deno run --watch --allow-read --allow-env --allow-net --unstable-detect-cjs --allow-sys=osRelease --allow-ffi main.ts"
+      "dev": "deno run --watch --allow-read --allow-write=data,db.sqlite --allow-env --allow-net --unstable-detect-cjs --allow-sys=osRelease --allow-ffi main.ts"
     },
     "imports": {
       "@nestjs/common": "npm:@nestjs/common@^11.0.20",
