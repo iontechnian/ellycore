@@ -3,6 +3,7 @@
     "./ellytask-backend",
     "./ellycore-cron",
     "./ellycore-fragments-backend",
+    "./ellycore-fragments-frontend",
     "./ellycore-fragments-runtime"
   ],
   "nodeModulesDir": "auto"

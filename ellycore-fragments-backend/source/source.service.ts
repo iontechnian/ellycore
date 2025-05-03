@@ -32,7 +32,7 @@ export class SourceService implements OnModuleInit {
   /**
    * Gets the full path for a source file based on its ID
    */
-  private getFilePath(id: string): string {
+  getFilePath(id: string): string {
     return `${this.sourceDir}/${id}.ts`;
   }
 

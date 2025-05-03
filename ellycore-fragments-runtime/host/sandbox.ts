@@ -10,6 +10,7 @@ export interface SandboxOptions {
     bindings: Record<string, (...args: any[]) => Promise<any>>;
     timeLimitSeconds: number;
     lib?: string;
+    debug?: boolean;
 }
 
 interface EventEmitterEvents {
@@ -50,6 +51,7 @@ export class Execution extends EventEmitterType<{ stdout: string[], stderr: stri
         private readonly pathToScript: string,
         private readonly bindings: Record<string, (...args: any[]) => Promise<any>>,
         private readonly args: any[],
+        private readonly debug: boolean = false,
         private readonly lib: string | undefined,
     ) {
         super();
@@ -74,6 +76,7 @@ export class Execution extends EventEmitterType<{ stdout: string[], stderr: stri
                 `--port=${this.listener.addr.port}`,
                 `--script=${this.pathToScript}`,
                 ...(this.lib ? [`--lib=${this.lib}`] : []),
+                ...(this.debug ? ["--debug"] : []),
             ],
             stdout: "piped",
             stderr: "piped",
@@ -204,6 +207,7 @@ export class Sandbox {
     private readonly bindings: Record<string, (...args: any[]) => Promise<any>>;
     private readonly timeLimitSeconds: number;
     private readonly lib: string | undefined;
+    private readonly debug: boolean;
     private readonly executions: Record<string, Execution> = {};
 
     constructor(options: SandboxOptions) {
@@ -212,10 +216,11 @@ export class Sandbox {
         this.bindings = options.bindings;
         this.timeLimitSeconds = options.timeLimitSeconds || 60;
         this.lib = options.lib;
+        this.debug = options.debug || false;
     }
 
     createExecution(args: any[]) {
-        const execution = new Execution(this.memory, this.pathToScript, this.bindings, args, this.lib);
+        const execution = new Execution(this.memory, this.pathToScript, this.bindings, args, this.debug, this.lib);
         this.executions[execution.id] = execution;
         return execution;
     }

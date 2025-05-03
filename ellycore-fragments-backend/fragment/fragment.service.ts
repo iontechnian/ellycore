@@ -3,6 +3,8 @@ import { SourceService } from "../source/source.service.ts";
 import { CreateFragmentDTO, UpdateFragmentDTO, FragmentResponseDTO, FragmentListResponseDTO } from "./fragment.dtos.ts";
 import { DatabaseService, SqlParams } from "../database/database.service.ts";
 import { v4 as uuid } from "uuid";
+import { Sandbox} from "@ellycore/fragments-runtime"
+import { join } from "@std/path";
 
 @Injectable()
 export class FragmentService {
@@ -137,7 +139,27 @@ export class FragmentService {
       throw new NotFoundException(`Fragment with ID ${id} not found`);
     }
   }
+
+  async run(id: string, args: any[]): Promise<any> {
+    const _fragment = await this.findOne(id);
+    const sandbox = new Sandbox({
+      memory: 300,
+      pathToScript: join(Deno.cwd(), this.sourceService.getFilePath(id)),
+      bindings: {},
+      timeLimitSeconds: 10,
+      debug: true,
+    });
+    const execution = sandbox.createExecution(args);
+    execution.on("stdout", (data) => {
+      console.log(data);
+    });
+    execution.on("stderr", (data) => {
+      console.error(data);
+    });
+    return execution.run();
+  }
 }
+
 
 function mapToFragmentResponse(dbFragment: any, sourceContent?: string): FragmentResponseDTO {
   return {

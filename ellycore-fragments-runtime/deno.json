@@ -1,4 +1,5 @@
 {
+  "name": "@ellycore/fragments-runtime",
   "tasks": {
     "test": "deno test -A"
   },
@@ -9,6 +10,6 @@
     "uuid": "npm:uuid@^11.1.0"
   },
   "exports": {
-    "./sandbox": "./host/sandbox.ts"
+    ".": "./host/sandbox.ts"
   }
 }

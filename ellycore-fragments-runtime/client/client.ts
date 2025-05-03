@@ -5,6 +5,7 @@ let ID: string | undefined;
 let PORT: number | undefined;
 let SCRIPT: string | undefined;
 let LIB: string | undefined;
+let DEBUG: boolean = false;
 Deno.args.forEach((arg) => {
   if (arg.startsWith("--id=")) {
     const id = arg.split("=")[1];
@@ -29,6 +30,9 @@ Deno.args.forEach((arg) => {
     if (lib) {
       LIB = lib;
     }
+  }
+  if (arg.startsWith("--debug")) {
+    DEBUG = true;
   }
 });
 
@@ -96,7 +100,11 @@ while (true) {
   } else {
     if (message.method === "__run") {
       const args = message.args;
-      import(platform() === "win32" ? `file://${SCRIPT}` : SCRIPT).then(
+      const script = platform() === "win32" ? `file://${SCRIPT}` : SCRIPT;
+      if (DEBUG) {
+        console.log(`Running script: ${script}`);
+      }
+      import(script).then(
         (module) => {
           const call = module.default(...args);
           if (call instanceof Promise) {

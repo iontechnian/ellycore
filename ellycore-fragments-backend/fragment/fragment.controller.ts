@@ -79,4 +79,11 @@ export class FragmentController {
     remove(@Param('id') id: string): Promise<void> {
         return this.fragmentService.remove(id);
     }
+
+    @Post(':id/run')
+    @ApiOperation({ summary: 'Run a fragment' })
+    @ApiParam({ name: 'id', description: 'Fragment ID', example: '550e8400-e29b-41d4-a716-446655440000' })
+    run(@Param('id') id: string, @Body() args: any[]): Promise<any> {
+        return this.fragmentService.run(id, args);
+    }
 }
